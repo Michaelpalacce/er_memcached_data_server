@@ -1,0 +1,29 @@
+{
+  "name": "er_memcached_data_server",
+  "version": "1.0.0",
+  "description": "Plugin for event_request that implements a memcached data server",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./tests/memcached_data_server_test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Michaelpalacce/er_memcached_data_server.git"
+  },
+  "keywords": [
+    "memcached",
+	"event-request",
+	"data-store",
+	"data-server"
+  ],
+  "author": "Stefan Genov",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Michaelpalacce/er_memcached_data_server/issues"
+  },
+  "homepage": "https://github.com/Michaelpalacce/er_memcached_data_server#readme",
+  "dependencies": {
+    "event_request": "^17.0.0",
+    "memcached": "^2.2.2"
+  }
+}
