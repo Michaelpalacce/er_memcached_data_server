@@ -4,7 +4,8 @@
   "description": "Plugin for event_request that implements a memcached data server",
   "main": "index.js",
   "scripts": {
-    "test": "node ./tests/memcached_data_server_test"
+    "test": "node ./tests/memcached_data_server_test",
+	"deploy": "npm run test && npm publish"
   },
   "repository": {
     "type": "git",

@@ -2,7 +2,7 @@
 Plugin for event_request that implements a memcached data server
 
 # Notes:
-- Memcached DOES NOT support negative numbers when decrementing and OR decrementing
+- Memcached DOES NOT support negative numbers when decrementing and OR incrementing
 
 # Use:
 ~~~javascript
