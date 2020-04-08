@@ -1,6 +1,6 @@
 {
   "name": "er_memcached_data_server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Plugin for event_request that implements a memcached data server",
   "main": "index.js",
   "scripts": {
