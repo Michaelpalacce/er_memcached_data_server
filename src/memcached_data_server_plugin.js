@@ -4,5 +4,6 @@ const DataServerPlugin	= require( 'event_request/server/plugins/available_plugin
 const DataServer		= require( './memcached_data_server' );
 
 module.exports	= ( dataServerOptions )=>{
-	return new DataServerPlugin( 'er_data_server', { dataServer	: DataServer, dataServerOptions } );
+	const dataServer	= new DataServer( dataServerOptions );
+	return new DataServerPlugin( 'er_data_server', { dataServer } );
 };

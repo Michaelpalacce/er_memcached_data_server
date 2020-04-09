@@ -21,7 +21,7 @@ class MemcachedDataServer extends DataServer
 
 		const serverOptions		= typeof options[OPTIONS_SERVER_OPTIONS] !== 'undefined'
 								? options[OPTIONS_SERVER_OPTIONS]
-								: {};
+								: { poolSize: 100 };
 
 		this.defaultTtl			= typeof options['ttl'] === 'number'
 								? options['ttl']
@@ -29,7 +29,7 @@ class MemcachedDataServer extends DataServer
 
 		this.defaultTtl			= this.defaultTtl === -1 ? Infinity : this.defaultTtl;
 
-		this.server	= new Memcached( serverLocations, serverOptions );
+		this.server				= new Memcached( serverLocations, serverOptions );
 	}
 
 	/**
@@ -37,7 +37,7 @@ class MemcachedDataServer extends DataServer
 	 */
 	_stop()
 	{
-		this.server.end();
+		this.server.end(()=>{});
 	}
 
 	/**
