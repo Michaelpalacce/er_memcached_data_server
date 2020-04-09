@@ -6,7 +6,7 @@ const Memcached		= require( 'memcached' );
 const OPTIONS_SERVER_LOCATIONS	= 'serverLocations';
 const OPTIONS_SERVER_OPTIONS	= 'serverOptions';
 const DEFAULT_TTL				= 300;
-const MAX_TTL					= Math.pow( 2, 32 );
+const MAX_TTL					= 2592000;
 
 /**
  * @brief	Data server that stores data in a local or remote memcached instance
@@ -177,7 +177,7 @@ class MemcachedDataServer extends DataServer
 	{
 		ttl	= super._getTtl( ttl );
 
-		if ( ttl === Infinity )
+		if ( ttl === Infinity || ttl > MAX_TTL )
 			ttl	= MAX_TTL;
 
 		return ttl;

@@ -1225,23 +1225,20 @@ test({
 
 				const headers	= { cookie: `sid=${cookies.sid}`};
 
-				setTimeout(()=>{
-					sendServerRequest( `/${name}`, 'GET', 200, '', headers, 3390 ).then(( response )=>{
-						assert.equal( response.body.toString(), name );
-						assert.equal( typeof response.headers.authenticated !== 'undefined', true );
-						// assert.equal( response.headers.authenticated, 1 );
+				return sendServerRequest( `/${name}`, 'GET', 200, '', headers, 3390 );
+			}).then(( response )=>{
+				assert.equal( response.body.toString(), name );
+				assert.equal( typeof response.headers.authenticated !== 'undefined', true );
+				assert.equal( response.headers.authenticated, 1 );
 
-						const headers	= { cookie: `sid=wrong`};
+				const headers	= { cookie: `sid=wrong`};
 
-						return sendServerRequest( `/${name}`, 'GET', 200, '', headers, 3390 );
-					}).then(( response )=>{
-						// assert.equal( response.body.toString(), name );
-						// assert.equal( typeof response.headers.authenticated === 'undefined', true );
+				return sendServerRequest( `/${name}`, 'GET', 200, '', headers, 3390 );
+			}).then(( response )=>{
+				assert.equal( response.body.toString(), name );
+				assert.equal( typeof response.headers.authenticated === 'undefined', true );
 
-						done();
-					}).catch( done );
-				}, 1000 );
-
+				done();
 			}).catch( done );
 		});
 	}

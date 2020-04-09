@@ -1,3 +1,6 @@
+1.1.1
+- Fixed the MAX_TTL
+
 1.1.0
 - Fixed the stop
 - Added more tests
