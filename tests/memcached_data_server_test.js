@@ -1017,7 +1017,7 @@ test({
 			app.apply( app.er_response_cache );
 		}
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, 'cache.request', ( event )=>{
 			if ( i === 0 )
 			{
 				i ++;
@@ -1025,7 +1025,7 @@ test({
 			}
 
 			event.sendError( 'ERROR', 501 );
-		}, 'cache.request' );
+		});
 
 		sendServerRequest( `/${name}` ).then(( response )=>{
 			assert.equal( response.body.toString(), name );
@@ -1141,7 +1141,7 @@ test({
 			else
 			{
 				assert.equal( session.get( 'authenticated' ), true );
-				event.setHeader( 'authenticated', 1 );
+				event.setResponseHeader( 'authenticated', 1 );
 			}
 
 			event.send( name );
