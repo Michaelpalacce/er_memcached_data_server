@@ -16,4 +16,4 @@ after_success:
   - codecov --file coverage/lcov.info --disable search
 
 env:
-  - CODECOV_TOKEN=2ad21418-8e84-42c8-8e73-62c031c5ddc4
+  - CODECOV_TOKEN=90a8efe8-4170-418f-80c1-eeb01e023129
