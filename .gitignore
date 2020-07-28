@@ -17,3 +17,7 @@ cache
 .cacahe
 
 .idea
+
+.nyc_output
+
+coverage/lcov-report
