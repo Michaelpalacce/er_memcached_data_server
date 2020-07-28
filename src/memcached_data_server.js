@@ -23,8 +23,8 @@ class MemcachedDataServer extends DataServer
 								? options[OPTIONS_SERVER_OPTIONS]
 								: { poolSize: 100 };
 
-		this.defaultTtl			= typeof options['ttl'] === 'number'
-								? options['ttl']
+		this.defaultTtl			= typeof options.ttl === 'number'
+								? options.ttl
 								: DEFAULT_TTL;
 
 		this.defaultTtl			= this.defaultTtl === -1 ? Infinity : this.defaultTtl;

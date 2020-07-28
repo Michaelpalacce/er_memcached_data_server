@@ -76,7 +76,7 @@ function sendServerRequest( path, method = 'GET', statusCode = 200, data = '', h
 		req.write( data );
 		req.end();
 	});
-};
+}
 
 /**
  * @brief	Removes the cache file
@@ -100,6 +100,32 @@ test({
 			const ttl			= 100;
 			const persist		= true;
 
+			await dataServer.set( key, value, ttl, { persist } )
+
+			const dataSet	= await dataServer.get( key );
+
+			assert.equal( dataSet !== null, true );
+
+			assert.equal( dataSet, value );
+
+			removeCache( dataServer );
+			done();
+		}, 10 );
+	}
+});
+
+test({
+	message	: 'MemcachedDataServer.set.sets.data.twice',
+	test	: ( done )=>{
+		// Wait in case the file has not been deleted from the FS
+		setTimeout( async ()=>{
+			const dataServer	= new MemcachedDataServer();
+			const key			= `key${Math.random()}`;
+			const value			= 'value';
+			const ttl			= 100;
+			const persist		= true;
+
+			await dataServer.set( key, value, ttl, { persist } )
 			await dataServer.set( key, value, ttl, { persist } )
 
 			const dataSet	= await dataServer.get( key );
@@ -209,6 +235,23 @@ test({
 });
 
 test({
+	message	: 'MemcachedDataServer.get.when.data.does.not.exist',
+	test	: ( done )=>{
+		removeCache();
+		// Wait in case the file has not been deleted from the FS
+		setTimeout( async ()=>{
+			const dataServer	= new MemcachedDataServer( { persist: false } );
+			const dataSet		= await dataServer.get( 'test' );
+
+			assert.equal( dataSet, null );
+
+			removeCache( dataServer );
+			done();
+		}, 10 );
+	}
+});
+
+test({
 	message			: 'MemcachedDataServer.get with invalid data',
 	dataProvider	: [
 		['key', 123],
@@ -282,8 +325,61 @@ test({
 });
 
 test({
-	message			: 'MemcachedDataServer.touch with invalid data',
+	message	: 'MemcachedDataServer.touch.if.data.does.not.exist',
+	test	: ( done )=>{
+		setTimeout( async ()=>{
+			const dataServer	= new MemcachedDataServer( { persist: false } );
+			const key			= `key${Math.random()}`;
 
+			assert.deepStrictEqual( await dataServer.touch( key, 5 ), false );
+
+			done();
+		}, 10 );
+	}
+});
+
+test({
+	message	: 'MemcachedDataServer.testWithServerAttachesSuccessfully',
+	test	: ( done )=>{
+		const app	= new Server();
+		const name	= '/testWithServerAttachesSuccessfully';
+		const key	= `${name}${Math.random()}`;
+		const value	= 'test';
+
+		app.apply( getPlugin() );
+
+		app.get( name, async ( event )=>{
+			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
+
+			await event.dataServer.set( key, value );
+
+			event.send( name );
+		});
+
+		app.get( `${name}GET`, async ( event )=>{
+			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
+
+			assert.equal( await event.dataServer.get( key ), value );
+
+			event.send( `${name}GET` );
+		});
+
+		app.listen( 3334, ()=>{
+			sendServerRequest( name, 'GET', 200, '', {}, 3334 ).then(( response )=>{
+				assert.equal( response.body.toString(), name );
+
+				return sendServerRequest( `${name}GET`, 'GET', 200, '', {}, 3334 );
+			}).then(( response )=>{
+				assert.equal( response.body.toString(), `${name}GET` );
+
+				done();
+			}).catch( done );
+		});
+	}
+});
+
+test({
+	message			: 'MemcachedDataServer.touch with invalid data',
 	dataProvider	: [
 		['key', '123', {}],
 		[false, '123', {}],
@@ -578,46 +674,6 @@ test({
 });
 
 test({
-	message	: 'MemcachedDataServer.testWithServerAttachesSuccessfully',
-	test	: ( done )=>{
-		const app	= new Server();
-		const name	= '/testWithServerAttachesSuccessfully';
-		const key	= `${name}${Math.random()}`;
-		const value	= 'test';
-
-		app.apply( getPlugin() );
-
-		app.get( name, async ( event )=>{
-			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
-
-			await event.dataServer.set( key, value );
-
-			event.send( name );
-		});
-
-		app.get( `${name}GET`, async ( event )=>{
-			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
-
-			assert.equal( await event.dataServer.get( key ), value );
-
-			event.send( `${name}GET` );
-		});
-
-		app.listen( 3334, ()=>{
-			sendServerRequest( name, 'GET', 200, '', {}, 3334 ).then(( response )=>{
-				assert.equal( response.body.toString(), name );
-
-				return sendServerRequest( `${name}GET`, 'GET', 200, '', {}, 3334 );
-			}).then(( response )=>{
-				assert.equal( response.body.toString(), `${name}GET` );
-
-				done();
-			}).catch( done );
-		});
-	}
-});
-
-test({
 	message	: 'MemcachedDataServer.testWithServerRateLimits',
 	test	: ( done )=>{
 		const dataStore	= new MemcachedDataServer();
@@ -761,7 +817,6 @@ test({
 
 test({
 	message	: 'MemcachedDataServer.testWithServerRateLimitsStrictSTRESS',
-	skipped	: true,
 	test	: ( done )=>{
 		// This test runs locally easily, but does not work well in the travis env
 		const name			= 'testErRateLimitsWithStrictPolicyStress';
@@ -1182,6 +1237,19 @@ test({
 				done();
 			}).catch( done );
 		});
+	}
+});
+
+test({
+	message	: 'MemcachedDataServer.with.custom.options',
+	test	: ( done )=>{
+		const dataServer	= new MemcachedDataServer( { serverLocations: '', poolSize: 100, ttl: 300 } );
+
+		dataServer.stop();
+
+		setTimeout(()=>{
+			done();
+		}, 50 );
 	}
 });
 
