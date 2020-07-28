@@ -1,3 +1,6 @@
+1.1.4
+- Fix according to specifications
+
 1.1.3
 - Tests fix, Travis init 
 

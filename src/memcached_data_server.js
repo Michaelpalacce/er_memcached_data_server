@@ -107,7 +107,7 @@ class MemcachedDataServer extends DataServer
 					if ( result === false || result === undefined )
 						resolve( false );
 
-					resolve( result );
+					resolve( true );
 				}
 			);
 		});
@@ -126,7 +126,7 @@ class MemcachedDataServer extends DataServer
 					if ( result === false || result === undefined )
 							resolve( false );
 
-					resolve( result );
+					resolve( true );
 				}
 			);
 		});
