@@ -1,6 +1,6 @@
 {
   "name": "er_memcached_data_server",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Plugin for event_request that implements a memcached data server",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Michaelpalacce/er_memcached_data_server#readme",
   "dependencies": {
-    "event_request": "^26.0.9",
+    "event_request": "^26.0.11",
     "memcached": "^2.2.2"
   },
   "devDependencies": {
