@@ -1,7 +1,7 @@
 'use strict';
 
-const DataServer	= require( 'event_request/server/components/caching/data_server' );
-const Memcached		= require( 'memcached' );
+const DataServer				= require( 'event_request/server/components/caching/data_server' );
+const Memcached					= require( 'memcached' );
 
 const OPTIONS_SERVER_LOCATIONS	= 'serverLocations';
 const OPTIONS_SERVER_OPTIONS	= 'serverOptions';
@@ -13,6 +13,9 @@ const MAX_TTL					= 2592000;
  */
 class MemcachedDataServer extends DataServer
 {
+	/**
+	 * @param	{Object} options
+	 */
 	_configure( options )
 	{
 		const serverLocations	= typeof options[OPTIONS_SERVER_LOCATIONS] !== 'undefined'
@@ -37,7 +40,7 @@ class MemcachedDataServer extends DataServer
 	 */
 	_stop()
 	{
-		this.server.end(()=>{});
+		this.server.end(() => {});
 	}
 
 	/**
@@ -45,13 +48,13 @@ class MemcachedDataServer extends DataServer
 	 */
 	_get( key, options )
 	{
-		return new Promise(( resolve, reject )=>{
+		return new Promise(( resolve, reject ) => {
 			this.server.get( key, ( err, response ) => {
 				if ( err )
 					reject( err );
 
 				resolve( typeof response !== 'undefined' ? response : null );
-			})
+			});
 		});
 	}
 
@@ -60,8 +63,8 @@ class MemcachedDataServer extends DataServer
 	 */
 	async _set( key, value, ttl, options )
 	{
-		return new Promise(( resolve, reject )=>{
-			this.server.set( key, value, this._getTtl( ttl ), ( error )=>{
+		return new Promise(( resolve, reject ) => {
+			this.server.set( key, value, this._getTtl( ttl ), ( error ) => {
 					if ( error )
 						reject( error );
 
@@ -76,8 +79,8 @@ class MemcachedDataServer extends DataServer
 	 */
 	async _delete( key, options )
 	{
-		return new Promise(( resolve, reject )=>{
-			this.server.del( key, ( error )=>{
+		return new Promise(( resolve, reject ) => {
+			this.server.del( key, ( error ) => {
 					if ( error )
 						reject( error );
 
@@ -92,8 +95,8 @@ class MemcachedDataServer extends DataServer
 	 */
 	async _increment( key, value, options )
 	{
-		return new Promise(( resolve, reject )=>{
-			this.server.incr( key, value, ( error, result )=>{
+		return new Promise(( resolve, reject ) => {
+			this.server.incr( key, value, ( error, result ) => {
 					if ( error )
 						resolve( false );
 
@@ -111,8 +114,8 @@ class MemcachedDataServer extends DataServer
 	 */
 	async _decrement( key, value, options )
 	{
-		return new Promise(( resolve, reject )=>{
-			this.server.decr( key, value, ( error, result )=>{
+		return new Promise(( resolve, reject ) => {
+			this.server.decr( key, value, ( error, result ) => {
 					if ( error )
 						resolve( false );
 
@@ -130,8 +133,8 @@ class MemcachedDataServer extends DataServer
 	 */
 	async _touch( key, ttl, options )
 	{
-		return new Promise(( resolve, reject )=>{
-			this.server.touch( key, this._getTtl( ttl ), ( error, result )=>{
+		return new Promise(( resolve, reject ) => {
+			this.server.touch( key, this._getTtl( ttl ), ( error, result ) => {
 					if ( error )
 						reject( error );
 
@@ -152,7 +155,7 @@ class MemcachedDataServer extends DataServer
 		const promisify	= require( 'util' ).promisify;
 		const serverAdd	= promisify( this.server.add.bind( this.server ) );
 
-		return await serverAdd( key, DataServer.LOCK_VALUE, MAX_TTL ).catch(()=>{
+		return await serverAdd( key, DataServer.LOCK_VALUE, MAX_TTL ).catch(() => {
 			return false;
 		});
 	}
