@@ -1,6 +1,6 @@
 'use strict';
 
-const { Server }					= require( 'event_request' );
+const { Server, Loggur }			= require( 'event_request' );
 const { test, assert, runAllTests }	= require( 'event_request' ).Testing;
 const { request }					= require( 'http' );
 const RateLimitsPlugin				= require( 'event_request/server/plugins/available_plugins/rate_limits_plugin' );
@@ -12,7 +12,8 @@ const getPlugin						= require( '../src/memcached_data_server_plugin' );
 
 const app							= new Server();
 const dataServer					= new MemcachedDataServer();
-
+Loggur.disableDefault();
+Loggur.loggers	= {};
 app.apply( getPlugin() );
 
 /**
@@ -579,7 +580,7 @@ test({
 test({
 	message	: 'MemcachedDataServer.testWithServerAttachesSuccessfully',
 	test	: ( done )=>{
-		const app	= new Server.class();
+		const app	= new Server();
 		const name	= '/testWithServerAttachesSuccessfully';
 		const key	= `${name}${Math.random()}`;
 		const value	= 'test';
@@ -587,17 +588,17 @@ test({
 		app.apply( getPlugin() );
 
 		app.get( name, async ( event )=>{
-			assert.equal( event.cachingServer instanceof MemcachedDataServer, true );
+			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
 
-			await event.cachingServer.set( key, value );
+			await event.dataServer.set( key, value );
 
 			event.send( name );
 		});
 
 		app.get( `${name}GET`, async ( event )=>{
-			assert.equal( event.cachingServer instanceof MemcachedDataServer, true );
+			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
 
-			assert.equal( await event.cachingServer.get( key ), value );
+			assert.equal( await event.dataServer.get( key ), value );
 
 			event.send( `${name}GET` );
 		});
@@ -621,16 +622,16 @@ test({
 	test	: ( done )=>{
 		const dataStore	= new MemcachedDataServer();
 
-		const appOne	= new Server.class();
-		const appTwo	= new Server.class();
+		const appOne	= new Server();
+		const appTwo	= new Server();
 
 		const name			= 'testErRateLimitsBucketWorksCrossApps';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
-		appOne.apply( new RateLimitsPlugin( 'rate_limits' ), { fileLocation, dataStore } );
-		appTwo.apply( new RateLimitsPlugin( 'rate_limits' ), { fileLocation, dataStore } );
+		appOne.apply( new RateLimitsPlugin( 'rate_limits' ), { fileLocation, dataStore, useFile: true } );
+		appTwo.apply( new RateLimitsPlugin( 'rate_limits' ), { fileLocation, dataStore, useFile: true } );
 
-		appOne.get( `/${name}`, ( event )=>{
+		appOne.get( `/${name}`, async ( event )=>{
 			event.send( name );
 		} );
 
@@ -660,7 +661,7 @@ test({
 		let called			= 0;
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			called ++;
@@ -693,7 +694,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			assert.equal( event.rateLimited, false );
@@ -719,7 +720,7 @@ test({
 		const now			= Math.floor( new Date().getTime() / 1000 );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -743,7 +744,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -765,7 +766,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -787,7 +788,7 @@ test({
 			Promise.all( promises).then(()=>{
 				done();
 			}).catch( done );
-		}, 2100 );
+		}, 2500 );
 	}
 });
 
@@ -798,7 +799,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -820,7 +821,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -842,7 +843,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -865,7 +866,7 @@ test({
 		let called			= 0;
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			called ++;
@@ -898,7 +899,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -920,7 +921,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -942,7 +943,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -965,7 +966,7 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
 			event.send( name );
@@ -987,18 +988,9 @@ test({
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
-			app.apply( app.er_rate_limits, { fileLocation } );
+			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
 		app.get( `/${name}`, ( event )=>{
-			try
-			{
-				assert.notEqual( Object.keys( event.rules[4].buckets )[0], `/${name}` );
-			}
-			catch ( e )
-			{
-				return done( 'er_rate_limits with ip limit did not return as expected' );
-			}
-
 			event.send( name );
 		} );
 
@@ -1120,10 +1112,10 @@ test({
 	message	: 'MemcachedDataServer.testWithServerSession',
 	test	: ( done )=>{
 		const name		= 'testErSession';
-		const appTwo	= new Server.class();
+		const appTwo	= new Server();
 
 		assert.throws(()=>{
-			const appOne	= new Server.class();
+			const appOne	= new Server();
 			appOne.apply( appOne.er_session );
 		});
 
