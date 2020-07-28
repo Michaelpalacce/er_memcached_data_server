@@ -1243,7 +1243,7 @@ test({
 test({
 	message	: 'MemcachedDataServer.with.custom.options',
 	test	: ( done )=>{
-		const dataServer	= new MemcachedDataServer( { serverLocations: '', poolSize: 100, ttl: 300 } );
+		const dataServer	= new MemcachedDataServer( { serverLocations: '', serverOptions: { poolSize: 100 }, ttl: 300 } );
 
 		dataServer.stop();
 
