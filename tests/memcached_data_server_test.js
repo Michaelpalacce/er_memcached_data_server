@@ -788,7 +788,7 @@ test({
 			Promise.all( promises).then(()=>{
 				done();
 			}).catch( done );
-		}, 2500 );
+		}, 3000 );
 	}
 });
 

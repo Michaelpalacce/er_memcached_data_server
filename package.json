@@ -4,7 +4,7 @@
   "description": "Plugin for event_request that implements a memcached data server",
   "main": "index.js",
   "scripts": {
-    "test": "node ./tests/memcached_data_server_test",
+    "test": "nyc --reporter=lcov --reporter=text-summary node ./tests/memcached_data_server_test",
     "deploy": "npm run test && npm publish"
   },
   "repository": {
@@ -26,5 +26,8 @@
   "dependencies": {
     "event_request": "^26.0.9",
     "memcached": "^2.2.2"
+  },
+  "devDependencies": {
+    "nyc": "^15.1.0"
   }
 }
