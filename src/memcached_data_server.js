@@ -50,6 +50,7 @@ class MemcachedDataServer extends DataServer
 	{
 		return new Promise(( resolve, reject ) => {
 			this.server.get( key, ( err, response ) => {
+				/* istanbul ignore next */
 				if ( err )
 					reject( err );
 
@@ -65,6 +66,7 @@ class MemcachedDataServer extends DataServer
 	{
 		return new Promise(( resolve, reject ) => {
 			this.server.set( key, value, this._getTtl( ttl ), ( error ) => {
+					/* istanbul ignore next */
 					if ( error )
 						reject( error );
 
@@ -81,6 +83,7 @@ class MemcachedDataServer extends DataServer
 	{
 		return new Promise(( resolve, reject ) => {
 			this.server.del( key, ( error ) => {
+					/* istanbul ignore next */
 					if ( error )
 						reject( error );
 
@@ -135,6 +138,7 @@ class MemcachedDataServer extends DataServer
 	{
 		return new Promise(( resolve, reject ) => {
 			this.server.touch( key, this._getTtl( ttl ), ( error, result ) => {
+					/* istanbul ignore next */
 					if ( error )
 						reject( error );
 

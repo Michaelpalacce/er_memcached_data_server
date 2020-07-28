@@ -1253,6 +1253,33 @@ test({
 	}
 });
 
+test({
+	message	: 'MemcachedDataServer.with.ttl.-1',
+	test	: ( done )=>{
+		const dataServer	= new MemcachedDataServer( { serverLocations: '', serverOptions: { poolSize: 100 }, ttl: -1 } );
+
+		dataServer.stop();
+
+		setTimeout(()=>{
+			done();
+		}, 50 );
+	}
+});
+
+test({
+	message	: 'MemcachedDataServer._getTtl',
+	test	: ( done )=>{
+		const dataServer	= new MemcachedDataServer( { serverLocations: '', serverOptions: { poolSize: 100 }, ttl: -1 } );
+
+		dataServer.stop();
+
+		setTimeout(()=>{
+			assert.deepStrictEqual( dataServer._getTtl(), 2592000 );
+			done();
+		}, 50 );
+	}
+});
+
 app.listen( 3333, async()=>{
 	runAllTests();
 });
