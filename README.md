@@ -13,10 +13,9 @@ Plugin for event_request that implements a memcached data server
 ~~~javascript
 // Get the data server only
 const MemcachedDataServer = require( 'er_memcached_data_server' );
+const DataServerPlugin = require( 'event_request/server/plugins/available_plugins/data_server_plugin' );
+const app = require( 'event_request' )();
 
-// Get the plugin that you can attach instead of the default one
-const { App } = require( 'event_request' );
-const app = App();
-
-app.apply( MemcachedDataServer.getPlugin() );
+// Attach the cache server
+app.apply( new DataServerPlugin( 'er_data_server', { dataServer: new MemcachedDataServer() } ) );
 ~~~

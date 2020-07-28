@@ -8,13 +8,16 @@ const Session						= require( 'event_request/server/components/session/session' 
 const path							= require( 'path' );
 
 const MemcachedDataServer			= require( '../src/memcached_data_server' );
-const getPlugin						= require( '../src/memcached_data_server_plugin' );
+const DataServerPlugin				= require( 'event_request/server/plugins/available_plugins/data_server_plugin' );
 
 const app							= new Server();
 const dataServer					= new MemcachedDataServer();
+
 Loggur.disableDefault();
 Loggur.loggers	= {};
-app.apply( getPlugin() );
+
+app.apply( new DataServerPlugin( 'er_data_server', { dataServer } ) );
+
 
 /**
  * @brief	Sends a request to the server and returns a Promise
@@ -346,7 +349,7 @@ test({
 		const key	= `${name}${Math.random()}`;
 		const value	= 'test';
 
-		app.apply( getPlugin() );
+		app.apply( new DataServerPlugin( 'er_data_server', { dataServer } ) );
 
 		app.get( name, async ( event )=>{
 			assert.equal( event.dataServer instanceof MemcachedDataServer, true );
