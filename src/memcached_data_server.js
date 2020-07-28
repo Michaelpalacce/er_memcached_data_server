@@ -40,6 +40,7 @@ class MemcachedDataServer extends DataServer
 	 */
 	_stop()
 	{
+		/* istanbul ignore next */
 		this.server.end(() => {});
 	}
 
