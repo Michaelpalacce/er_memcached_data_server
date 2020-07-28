@@ -9,7 +9,7 @@ services:
   - memcached
 
 before_install:
-  - npm update
+  - npm install
   - pip install --user codecov
 
 after_success:
