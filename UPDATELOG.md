@@ -1,3 +1,6 @@
+1.1.3
+- Tests fix, Travis init 
+
 1.1.2
 - Fixed to work with newest version of event request
 
