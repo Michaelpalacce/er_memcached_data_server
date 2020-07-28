@@ -1,3 +1,6 @@
+1.1.2
+- Fixed to work with newest version of event request
+
 1.1.1
 - Fixed the MAX_TTL
 

@@ -10,7 +10,7 @@ const path							= require( 'path' );
 const MemcachedDataServer			= require( '../src/memcached_data_server' );
 const getPlugin						= require( '../src/memcached_data_server_plugin' );
 
-const app							= new Server.class();
+const app							= new Server();
 const dataServer					= new MemcachedDataServer();
 
 app.apply( getPlugin() );
@@ -94,24 +94,18 @@ test({
 		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer();
-			const key			= `key${Math.random()}`
+			const key			= `key${Math.random()}`;
 			const value			= 'value';
 			const ttl			= 100;
 			const persist		= true;
-			let called			= 0;
 
-			dataServer.on( 'set', ()=>{
-				called ++;
-			});
-
-			await dataServer.set( key, value, ttl, { persist } );
+			await dataServer.set( key, value, ttl, { persist } )
 
 			const dataSet	= await dataServer.get( key );
 
 			assert.equal( dataSet !== null, true );
 
 			assert.equal( dataSet, value );
-			assert.equal( called, 1 );
 
 			removeCache( dataServer );
 			done();
@@ -198,22 +192,14 @@ test({
 		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer( { persist: false } );
-			const key			= `key${Math.random()}`
+			const key			= `key${Math.random()}`;
 			const value			= 'value';
 			const ttl			= 100;
-			const persist		= true;
-			const expected		= { key: { key, value, ttl, persist } };
-			let called			= 0;
-
-			dataServer.on( 'get', ()=>{
-				called ++;
-			});
 
 			await dataServer.set( key, value, ttl );
 			const dataSet	= await dataServer.get( key );
 
 			assert.equal( dataSet, value );
-			assert.equal( called, 1 );
 
 			removeCache( dataServer );
 			done();
@@ -252,7 +238,7 @@ test({
 		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer( { persist: false } );
-			const key			= `key${Math.random()}`
+			const key			= `key${Math.random()}`;
 			const value			= 'value';
 			const ttl			= 1;
 			const persist		= true;
@@ -270,21 +256,14 @@ test({
 });
 
 test({
-	message	: 'MemcachedDataServer.touch updates expirationDate',
+	message	: 'MemcachedDataServer.touch.updates.expirationDate',
 	test	: ( done )=>{
-		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer( { persist: false } );
 			const key			= `key${Math.random()}`;
 			const value			= 'value';
 			const ttl			= 1;
 			const persist		= true;
-			let called			= 0;
-
-			dataServer.on( 'touch', ()=>{
-				called ++;
-			});
-
 
 			await dataServer.set( key, value, ttl, { persist } );
 			await dataServer.touch( key, 5 );
@@ -293,7 +272,6 @@ test({
 				const dataSet	= await dataServer.get( key );
 
 				assert.equal( dataSet, value );
-				assert.equal( called, 1 );
 
 				removeCache( dataServer );
 				done();
@@ -304,6 +282,7 @@ test({
 
 test({
 	message			: 'MemcachedDataServer.touch with invalid data',
+
 	dataProvider	: [
 		['key', '123', {}],
 		[false, '123', {}],
@@ -341,21 +320,14 @@ test({
 		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer({ persist: false });
-			const key			= `key${Math.random()}`
+			const key			= `key${Math.random()}`;
 			const value			= { test: 'value' };
-			let called			= 0;
-
-			dataServer.on( 'delete', ()=>{
-				called ++;
-			});
 
 			await dataServer.set( key, value );
 
 			assert.equal( await dataServer.delete( 123 ), false );
 			assert.equal( await dataServer.delete( key ), true );
 			assert.equal( await dataServer.delete( key ), true );
-			// 2 because one is with invalid arguments
-			assert.equal( called, 2 );
 
 			removeCache( dataServer );
 			done();
@@ -382,11 +354,6 @@ test({
 
 		const dataServer	= new MemcachedDataServer({ persist: false });
 		const key			= `key${Math.random()}`;
-		let called			= 0;
-
-		dataServer.on( 'increment', ()=>{
-			called ++;
-		});
 
 		await dataServer.set( key, value ).catch( done );
 
@@ -404,7 +371,6 @@ test({
 		}
 
 		assert.equal( result, expectedValue );
-		assert.equal( called, 1 );
 
 		removeCache( dataServer );
 		done();
@@ -431,12 +397,7 @@ test({
 		removeCache();
 
 		const dataServer	= new MemcachedDataServer({ persist: false });
-		const key			= `key${Math.random()}`
-		let called			= 0;
-
-		dataServer.on( 'decrement', ()=>{
-			called ++;
-		});
+		const key			= `key${Math.random()}`;
 
 		await dataServer.set( key, value ).catch( done );
 
@@ -454,7 +415,6 @@ test({
 		}
 
 		assert.equal( result, expectedValue );
-		assert.equal( called, 1 );
 
 		removeCache( dataServer );
 		done();
@@ -495,11 +455,6 @@ test({
 		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer( { persist: false } );
-			let called			= 0;
-
-			dataServer.on( 'lock', ()=>{
-				called ++;
-			});
 
 			await dataServer.unlock( 'key' );
 
@@ -508,8 +463,6 @@ test({
 			assert.equal( await dataServer.unlock( 'key' ), true );
 			assert.equal( await dataServer.lock( 'key' ), true );
 			assert.equal( await dataServer.lock( 'key' ), false );
-
-			assert.equal( called, 4 );
 
 			removeCache( dataServer );
 			done();
@@ -546,17 +499,11 @@ test({
 		// Wait in case the file has not been deleted from the FS
 		setTimeout( async ()=>{
 			const dataServer	= new MemcachedDataServer( { persist: false } );
-			let called			= 0;
-
-			dataServer.on( 'unlock', ()=>{
-				called ++;
-			});
 
 			assert.equal( await dataServer.unlock( 'key' ), true );
 			assert.equal( await dataServer.unlock( 'key' ), true );
 			assert.equal( await dataServer.lock( 'key' ), true );
 			assert.equal( await dataServer.unlock( 'key' ), true );
-			assert.equal( called, 3 );
 
 			await dataServer.unlock( 'key' );
 			removeCache( dataServer );

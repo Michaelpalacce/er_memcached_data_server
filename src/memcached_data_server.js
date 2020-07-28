@@ -46,7 +46,7 @@ class MemcachedDataServer extends DataServer
 	_get( key, options )
 	{
 		return new Promise(( resolve, reject )=>{
-			this.server.get( key, function( err, response ){
+			this.server.get( key, ( err, response ) => {
 				if ( err )
 					reject( err );
 
