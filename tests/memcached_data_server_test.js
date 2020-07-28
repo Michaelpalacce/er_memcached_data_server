@@ -817,6 +817,7 @@ test({
 
 test({
 	message	: 'MemcachedDataServer.testWithServerRateLimitsStrictSTRESS',
+	skipped	: true,
 	test	: ( done )=>{
 		// This test runs locally easily, but does not work well in the travis env
 		const name			= 'testErRateLimitsWithStrictPolicyStress';
