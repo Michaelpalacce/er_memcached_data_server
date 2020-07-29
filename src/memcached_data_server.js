@@ -102,12 +102,12 @@ class MemcachedDataServer extends DataServer
 		return new Promise(( resolve, reject ) => {
 			this.server.incr( key, value, ( error, result ) => {
 					if ( error )
-						resolve( false );
+						resolve( null );
 
 					if ( result === false || result === undefined )
-						resolve( false );
+						resolve( null );
 
-					resolve( true );
+					resolve( result );
 				}
 			);
 		});
@@ -121,12 +121,12 @@ class MemcachedDataServer extends DataServer
 		return new Promise(( resolve, reject ) => {
 			this.server.decr( key, value, ( error, result ) => {
 					if ( error )
-						resolve( false );
+						resolve( null );
 
 					if ( result === false || result === undefined )
-							resolve( false );
+							resolve( null );
 
-					resolve( true );
+					resolve( result );
 				}
 			);
 		});

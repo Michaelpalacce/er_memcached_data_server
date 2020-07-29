@@ -438,16 +438,16 @@ test({
 test({
 	message	: 'MemcachedDataServer.increment increments data',
 	dataProvider	: [
-		[100, 100, true],
-		[0, 100, true],
-		[-1, 100, false],
-		['string', 100, false],
+		[100, 100, 200],
+		[0, 100, 100],
+		[-1, 100, null],
+		['string', 100, null],
 		[[], 100, null],
 		[{}, 100, null],
-		[100, null, false],
-		[100, 'string', false],
-		[100, {}, false],
-		[100, [], false],
+		[100, null, null],
+		[100, 'string', null],
+		[100, {}, null],
+		[100, [], null],
 	],
 	test	: async ( done, value, increment, expectedValue )=>{
 		removeCache();
@@ -462,7 +462,7 @@ test({
 		if ( expectedValue === null )
 		{
 			removeCache( dataServer );
-			return done( ! ( false === result ) );
+			return done( ! ( null === result ) );
 		}
 
 		if ( result === null )
@@ -480,18 +480,18 @@ test({
 test({
 	message	: 'MemcachedDataServer.decrement decrement data',
 	dataProvider	: [
-		[100, 100, true],
-		[0, 100, true],
-		[1, 100, true],
-		[100, 99, true],
-		[100, 50, true],
-		['string', true, false],
-		[[], 100, false],
-		[{}, 100, false],
-		[100, null, false],
-		[100, 'string', false],
-		[100, {}, false],
-		[100, [], false],
+		[100, 100, 0],
+		[0, 100, 0],
+		[1, 100, 0],
+		[100, 99, 1],
+		[100, 50, 50],
+		['string', true, null],
+		[[], 100, null],
+		[{}, 100, null],
+		[100, null, null],
+		[100, 'string', null],
+		[100, {}, null],
+		[100, [], null],
 	],
 	test	: async ( done, value, decrement, expectedValue )=>{
 		removeCache();
@@ -506,7 +506,7 @@ test({
 		if ( expectedValue === null )
 		{
 			removeCache( dataServer );
-			return done( ! ( false === result ) );
+			return done( ! ( null === result ) );
 		}
 
 		if ( result === null )

@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Michaelpalacce/er_memcached_data_server#readme",
   "dependencies": {
-    "event_request": "^26.0.11",
+    "event_request": "^26.1.1",
     "memcached": "^2.2.2"
   },
   "devDependencies": {

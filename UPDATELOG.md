@@ -1,3 +1,6 @@
+1.1.6
+- Increment and Decrement now return null and number
+
 1.1.5
 - Update Example
 
